@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentry</title>
+<style>
+  body{font-family:system-ui,sans-serif;background:#0f1115;color:#e8e8e8;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center}
+  main{max-width:360px;padding:24px}
+  a.btn{display:block;margin:10px 0;padding:14px;border-radius:12px;text-decoration:none;font-weight:bold}
+  .p{background:#3b82f6;color:#fff}.s{border:1px solid #444;color:#ddd}
+  small{color:#999;word-break:break-all}
+</style>
+</head>
+<body>
+<main>
+  <h2>Sentry</h2>
+  <p id="msg">هذا رابط خاص بتطبيق Sentry.</p>
+  <a class="btn p" id="open" href="#">فتح في التطبيق</a>
+  <a class="btn s" href="https://github.com/nt18s-max/Sentry-app-updates/releases/latest">تحميل التطبيق</a>
+  <small id="code"></small>
+</main>
+<script>
+  // Paths look like /l/<v|g|o>/<code>. When the app is installed Android opens the app
+  // itself (verified link); this page only shows when it is not, or on a desktop browser.
+  var m = location.pathname.match(/^\/l\/([gov])\/([A-Za-z0-9_-]{4,64})/);
+  if (!m) { document.getElementById('open').style.display = 'none'; }
+  else {
+    document.getElementById('code').textContent = m[2];
+    var intent = 'intent://l/' + m[1] + '/' + m[2] +
+      '#Intent;scheme=sentry;package=com.naif.sentry;end';
+    document.getElementById('open').href = intent;
+    if (/Android/i.test(navigator.userAgent)) setTimeout(function () { location.href = intent; }, 400);
+  }
+</script>
+</body>
+</html>
