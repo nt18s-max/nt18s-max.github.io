@@ -1,10 +1,14 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "com.naif.sentry",
-      "sha256_cert_fingerprints": ["REPLACE_WITH_SHA256"]
+      "sha256_cert_fingerprints": [
+        "3B:3D:2E:45:63:E6:C3:A0:07:1C:25:82:97:FA:0A:86:78:18:84:E0:8B:C7:BD:C8:D9:4D:5A:29:26:63:7A:24"
+      ]
     }
   }
 ]
