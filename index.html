@@ -29,10 +29,16 @@
   if (!m) { document.getElementById('open').style.display = 'none'; }
   else {
     document.getElementById('code').textContent = m[2];
-    var intent = 'intent://l/' + m[1] + '/' + m[2] +
-      '#Intent;scheme=sentry;package=com.naif.sentry;end';
+    // No `package=` on purpose: with it, a phone that lacks the app is sent to Google Play.
+    // Without it, an unhandled link falls back to THIS page (S.browser_fallback_url) instead.
+    var back = location.origin + location.pathname + '#stay';
+    var intent = 'intent://l/' + m[1] + '/' + m[2] + '#Intent;scheme=sentry;S.browser_fallback_url=' +
+      encodeURIComponent(back) + ';end';
     document.getElementById('open').href = intent;
-    if (/Android/i.test(navigator.userAgent)) setTimeout(function () { location.href = intent; }, 400);
+    // Try the app once. Coming back from the fallback (#stay) shows the page and stops.
+    if (/Android/i.test(navigator.userAgent) && location.hash !== '#stay') {
+      setTimeout(function () { location.href = intent; }, 400);
+    }
   }
 
   // Download button that picks the APK matching the phone's CPU. Chrome on Android tells the
