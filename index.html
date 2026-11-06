@@ -17,7 +17,9 @@
   <h2>Sentry</h2>
   <p id="msg">هذا رابط خاص بتطبيق Sentry.</p>
   <a class="btn p" id="open" href="#">فتح في التطبيق</a>
-  <a class="btn s" href="https://github.com/nt18s-max/Sentry-app-updates/releases/latest">تحميل التطبيق</a>
+  <a class="btn s" id="dl" href="https://github.com/nt18s-max/Sentry-app-updates/releases/latest">تحميل التطبيق</a>
+  <p id="arch" style="font-size:12px;color:#aaa;margin:0 0 8px"></p>
+  <a id="other" href="#" style="font-size:12px;color:#8ab4ff;display:none">نسخة أخرى لمعمارية مختلفة</a>
   <small id="code"></small>
 </main>
 <script>
@@ -31,6 +33,41 @@
       '#Intent;scheme=sentry;package=com.naif.sentry;end';
     document.getElementById('open').href = intent;
     if (/Android/i.test(navigator.userAgent)) setTimeout(function () { location.href = intent; }, 400);
+  }
+
+  // Download button that picks the APK matching the phone's CPU. Chrome on Android tells the
+  // architecture through userAgentData; older browsers through navigator.platform.
+  // Unknown -> the 64-bit build first (most phones) and the other one one tap away.
+  var BASE = 'https://github.com/nt18s-max/Sentry-app-updates/releases/download/latest/sentry-';
+  var NAMES = {'arm64-v8a': '64 بت (arm64)', 'armeabi-v7a': '32 بت (armv7)'};
+  function show(abi, sure) {
+    var other = abi === 'arm64-v8a' ? 'armeabi-v7a' : 'arm64-v8a';
+    var dl = document.getElementById('dl');
+    dl.href = BASE + abi + '.apk';
+    dl.textContent = 'تحميل التطبيق — ' + NAMES[abi];
+    document.getElementById('arch').textContent = sure
+      ? 'اخترنا النسخة المناسبة لجهازك.'
+      : 'لم نستطع معرفة معمارية جهازك؛ جرّب هذه، وإن لم تثبّت فاستعمل النسخة الأخرى.';
+    var o = document.getElementById('other');
+    o.href = BASE + other + '.apk';
+    o.textContent = 'نسخة ' + NAMES[other];
+    o.style.display = 'inline';
+  }
+  function fromPlatform() {
+    var p = (navigator.platform || '') + ' ' + (navigator.userAgent || '');
+    if (/aarch64|armv81|arm64/i.test(p)) return 'arm64-v8a';
+    if (/armv7|armv8l|armv6/i.test(p)) return 'armeabi-v7a';
+    return null;
+  }
+  if (/Android/i.test(navigator.userAgent || '')) {
+    var done = function (abi) { show(abi || 'arm64-v8a', !!abi); };
+    if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+      navigator.userAgentData.getHighEntropyValues(['architecture', 'bitness']).then(function (v) {
+        var a = String(v.architecture || '').toLowerCase();
+        if (a === 'arm') done(String(v.bitness) === '64' ? 'arm64-v8a' : 'armeabi-v7a');
+        else done(fromPlatform());
+      }, function () { done(fromPlatform()); });
+    } else done(fromPlatform());
   }
 </script>
 </body>
